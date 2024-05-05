@@ -104,6 +104,22 @@ for line in map:
       variable_name = f"{variable_name}_{instance}"
       variable_mapping[f"{variable_name}"] = int(parts[-1])
 
+print(variable_mapping)
+max_indices = {}
+
+for key in variable_mapping.keys():
+    prefix, index = key.split('_')
+    index = int(index)
+    
+    if prefix not in max_indices or index > max_indices[prefix]:
+        max_indices[prefix] = index
+
+print(max_indices)
+'''
+for key, value in max_indices.items():
+    print(f"{key}: {value}")
+'''
+
 # Print guard mapping
 
     
