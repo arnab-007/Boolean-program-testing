@@ -3,7 +3,7 @@
     "Bools": ["a", "b", "c"]
   },
   "Candidate": {
-    "Expression": "(!a || b) && (!a || c)"
+    "Expression": "(!a || b || c)"
   },
   "Updates in each iteration": {
     "a": 2,
