@@ -11,32 +11,34 @@
 #include <stdlib.h>
 
 // Function declaration
-int func1(_Bool a, _Bool b, _Bool c, _Bool d, _Bool e, _Bool r1, _Bool r2, _Bool r3, _Bool r4) {
-    a = !a || d;
+int func1(_Bool x1, _Bool x2, _Bool x3, _Bool x4, _Bool x5, _Bool r1, _Bool r2, _Bool r3, _Bool r4) {
+    x1 = !x1 || x4;
     if (r1 && !r4)
     {
-        b = b && a && !e;
+        x2 = x2 && x1 && !x5;
     }
     else 
     {
-        b = (!b || a) && !c;
+        x2 = (!x2 || x1) && !x3;
     }
     if (r2 || (r3 && !r4))
     {
-        c = !c && e;
+        x3 = !x3 && x5;
     }
     else
     {
-        d = c && !b && e;
+        x4 = x3 && !x2 && x5;
     }
     
-    a = b || (!c) || e;
-    b = c || (b && !a) || !e;
-    e = d && !a;
+    x1 = x2 || (!x3) || x5;
+    x2 = x3 || (x2 && !x1) || !x5;
+    x5 = x4 && !x1;
        
     
-    return (16*(int)a + 8*(int)b + 4*(int)c + 2*(int)d + (int)e);
+    return (16*(int)x1 + 8*(int)x2 + 4*(int)x3 + 2*(int)x4 + (int)x5);
 }
+
+
 
 int main(int argc, char *argv[]) {
     if (argc != 10) { // Check if exactly 9 arguments are provided
@@ -64,3 +66,46 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+
+
+/*
+int main()
+{
+    _Bool x1,x2,x3,x4,x5,r1,r2,r3,r4;
+    x1 = 0;
+    x2 = 0;
+    x3 = 0;
+    x4 = 0;
+    x5 = 0;
+    r1 = 0;
+    r2 = 0;
+    r3 = 0;
+    r4 = 0;
+
+
+    for (x1 =0;x1<=1;x1++){
+        for (x2 =0;x2<=1;x1++){
+            for (x3 =0;x3<=1;x1++)
+            {
+                for (x4 =0;x4<=1;x1++){
+                    for (x5 =0;x5<=1;x1++){
+                        for (r1 =0;r1<=1;x1++){
+                            for (r2 =0;r2<=1;x1++){
+                                for (r3 =0;r3<=1;x1++){
+                                    for (r4 =0;r4<=1;x1++){
+                                        printf("%d\n", func1(x1,x2,x3,x4,x5,r1,r2,r3,r4));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+}
+
+*/

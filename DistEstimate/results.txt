@@ -1,0 +1,14 @@
+['Ex9']
+Weight function of the candidate: 0.6683333333333333
+['Ex9']
+Weight function of the candidate: 0.6683333333333333
+['Ex9']
+Weight function of the candidate: 0.6683333333333333
+['Ex9']
+Weight function of the candidate: 0.6683333333333333
+['Ex9']
+Weight function of the candidate: 0.6683333333333333
+['Ex9']
+Weight function of the candidate: 0.71
+['Ex9']
+Weight function of the candidate: 0.71

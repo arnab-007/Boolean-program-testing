@@ -1,24 +1,15 @@
 import subprocess
 import random
 import re
-import os
-import json
-PATH = os.path.realpath("")
-assumed_shape = " "
 
-
-def get_config(progname):
-    with open(os.path.join(PATH, "candidate_files", progname + ".json"), "r") as f:
-        config = json.load(f)
-    return config
 
 def convert_decimal_state_to_binary(n,num_states):
     if n == 0:
         return "0"
     binary_str = ""
     while n > 0:
-        binary_str = str(n % 2) + binary_str  
-        n = n // 2 
+        binary_str = str(n % 2) + binary_str  # Append remainder (0 or 1) to the binary string
+        n = n // 2  # Update n by dividing it by 2
     preassignment = [int(bit) for bit in binary_str]
     assignment = [0]*(num_states-len(preassignment)) + preassignment
 
@@ -82,13 +73,15 @@ def evaluate_cnf(clauses, assignment):
 
 
 def read_file_to_list(filename):
-    L = []  
+    L = []  # List to store each line as a list of integers
     with open(filename, 'r') as file:
         for line in file:
-            
+            # Split the line by spaces and convert each element to an integer
+            # Ignore the trailing zero
             clause = [int(x) for x in line.split() if int(x) != 0]
             L.append(clause)
     return L
+
 
 
 
@@ -125,128 +118,52 @@ def ex9(x1, x2, x3, x4, x5, r1, r2, r3, r4):
 results = []
 
 num_states = 5
-with open(os.path.join(PATH, "program-list.txt"), "r") as f:
-    prognames = f.read().strip().split("\n")
-
-
-for progname in prognames:
-    config = get_config(progname)
-    prog_variables = config["Program_variables"]["Bools"]
-    cand = config["Candidate"]["Expression"]
-    init_states = config["Initial states"]["Expression"]
-    k = config["Number of iterations"]["while"]
-    rand = config["Random_variables"]["Bools"]
-
-    print(rand)
-'''
-command = ['./cmsgen/build/cmsgen', '--samples=500', '--samplefile=samples.out', 'input-cnf']
-result = subprocess.run(command, check=True, capture_output=True, text=True)
-'''
+subprocess.run(['./cmsgen/build/cmsgen', str('input-cnf')], 
+                            capture_output=True, text=True)
 filename = 'samples.out'  
 L = read_file_to_list(filename)
-L = [[0 if x < 0 else 1 for x in state] for state in L]
-violating_init_states = list()
-element_counts = {}
-print(len(L))
-#print(k)
-# Run the program 10000 times with random inputs
-for p in range(len(L)):
-    L1 = L[p]
-    #print(L1)
-    for q in range(10):
-        for r in range(k):
-            
-            r1 = random.randint(0, 1)
-            r2 = random.randint(0, 1)
-            r3 = random.randint(0, 1)
-            r4 = random.randint(0, 1)
-            output = ex9(L1[0], L1[1], L1[2], L1[3], L1[4], r1, r2, r3, r4)
-            #print("Output: ",output)
-            
-            
-            L1 = [int(bit) for bit in bin(int(output))[2:].zfill(5)]
-        
-        
-        results.append(output)
-        
-        element_counts = {}
-        
-        
-        L1 = L[p]
+L = [[0 if x < 0 else 1 for x in clause] for clause in L]
+# Run the program 100 times with random inputs
+for i in range(100):
+    
+    r1 = random.randint(0, 1)
+    r2 = random.randint(0, 1)
+    r3 = random.randint(0, 1)
+    r4 = random.randint(0, 1)
+    output = ex9(L[i][0], L[i][1], L[i][2], L[i][3], L[i][4], r1, r2, r3, r4)
+    '''
+    output =  ex5(L[i][0], L[i][1], L[i][2])
+    '''
+    results.append(output)
+    
+    element_counts = {}
+    
+    # Iterate over the multiset
     for element in results:
-            
+        # If the element is already in the dictionary, increment its count
         if element in element_counts:
             element_counts[element] += 1
-            
+        # Otherwise, add the element to the dictionary with an initial count of 1
         else:
             element_counts[element] = 1
     
-    #print(L[p])
-    #print(element_counts)
+    
 
 
-print("Results from 600 runs:")
+print("Results from 100 runs:")
 print(element_counts)
 rev_distance = 0
 candidate_file = 'candidate-cnf'
-counterexamples = list()
 clauses = parse_dimacs(candidate_file) #parsing candidate CNF file
 for element in element_counts:
     #print(element)
     assignment =  convert_decimal_state_to_binary(int(element),num_states)
     #print(assignment)
-    ind_distance = evaluate_cnf(clauses,assignment)*element_counts[element]
-    rev_distance += ind_distance
+    rev_distance += (evaluate_cnf(clauses,assignment)*element_counts[element])
     #print(rev_distance)
-    if (ind_distance == 0):
-        counterexamples.append(element)
 
-distance = 1 - (rev_distance/(len(L)*10))
+distance = 1 - (rev_distance/100)
 print("DistEstimate outputs: ",distance)
-
-
-counterexamples_dict = {}
-
-for element in counterexamples:
-    counterexamples_dict[element] = element_counts[element]/(len(L)*10)
-
-print("Set of counterexamples: ",counterexamples_dict)
-
-input_dict = {"progname":progname,"candidate":cand,"init_states":init_states,"iterations":k}
-output_dict = {"Reachability_dict":element_counts,"DistEstimate_value":distance,"counterexamples":counterexamples_dict}
-
-total_dict = {"input_dict":input_dict,"output_dict":output_dict}
-
-'''
-counterexamples_file = 'Experimental results/Job_01'
-
-with open(counterexamples_file, 'w') as file:
-    file.write("Inputs: \n")
-    file.write("Set of counterexamples\n")
-    file.write("State : probability of violation\n")
-    for counterexample in counterexamples:
-        file.write(f"{counterexample}\n") 
-
-'''
-results_directory = os.path.join(os.getcwd(), 'DistEstimate_results')
-if not os.path.exists(results_directory):
-    os.makedirs(results_directory)
-
-
-
-existing_files = os.listdir(results_directory)
-file_number = 1
-
-# Loop until you find an unused file name (exp1.json, exp2.json, etc.)
-while f"exp{file_number}.json" in existing_files:
-    file_number += 1
-
-# Create the new filename in the results subdirectory
-filename = os.path.join(results_directory, f"exp{file_number}.json")
-
-# Write the data to the new file
-with open(filename, 'w') as json_file:
-    json.dump(total_dict, json_file, indent=4)
 
 
 
