@@ -121,6 +121,12 @@ def ex9(x1, x2, x3, x4, x5, r1, r2, r3, r4):
     output = result.stdout.strip()
     return output
 
+def ex10(x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15, x16, x17, r1, r2, r3, r4, r5, r6, r7):
+    result = subprocess.run(['./a.out', str(x1), str(x2), str(x3), str(x4), str(x5), str(x6), str(x7), str(x8), str(x9), str(x10), str(x11), str(x12), str(x13), str(x14), str(x15), str(x16), str(x17), str(r1), str(r2), str(r3), str(r4), str(r5), str(r6), str(r7)], 
+                            capture_output=True, text=True)
+    output = result.stdout.strip()
+    return output
+
 
 results = []
 
@@ -247,6 +253,7 @@ filename = os.path.join(results_directory, f"exp{file_number}.json")
 # Write the data to the new file
 with open(filename, 'w') as json_file:
     json.dump(total_dict, json_file, indent=4)
+
 
 
 
