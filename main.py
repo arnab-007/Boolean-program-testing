@@ -128,23 +128,26 @@ for progname in prognames:
     config = get_config(progname)
     prog_variables = config["Program_variables"]["Bools"]
     cand = config["Candidate"]["Expression"]
-    updates = config["Updates in each iteration"]
+    
     iterations = config["Number of iterations"]
     
     cnf_list_init, cnf_str_init = generate_init_DIMACS_formula(cand,variable_mapping)
+    print(cnf_list_init)
     DIMACS_file = 'cnf-out'
     cnf_prog_formula = extract_formula_from_DIMACS(DIMACS_file)[:-(len(prog_variables))]
-    cnf_list_final, cnf_str_final = generate_final_DIMACS_formula(cand,variable_mapping,updates)
+    print(cnf_prog_formula)
+    cnf_list_final, cnf_str_final = generate_final_DIMACS_formula(cand,variable_mapping,max_indices)
     neg_dnf_list_final = [[-elem for elem in L] for L in cnf_list_final]
     
     neg_cnf_list_final = DNF_to_CNF(neg_dnf_list_final)
     neg_cnf_list_final = [elem for elem in neg_cnf_list_final if elem]
     
-
+    
     full_formula_list = cnf_list_init + cnf_prog_formula + neg_cnf_list_final
 
     # Convert to set to remove duplicates and then back to list
     full_formula_list = list(set(tuple(clause) for clause in full_formula_list))
+    #print(full_formula_list)
     full_formula_dimacs = generate_DIMACS_formula(full_formula_list)
     file_path = "invariant_formula.cnf"
 
